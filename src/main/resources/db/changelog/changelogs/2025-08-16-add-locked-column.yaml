@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20250816-locked-column
+      author: nam
+      changes:
+        - addColumn:
+            tableName: accounts
+            columns:
+              - column:
+                  name: locked
+                  type: tinyint(1)
+                  constraints:
+                    nullable: false

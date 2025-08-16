@@ -1,6 +1,7 @@
 package io.fptu.sep490.service.impl;
 
 import io.fptu.sep490.constant.ActivityStatus;
+import io.fptu.sep490.dto.request.LoginRequest;
 import io.fptu.sep490.dto.request.RegisterRequest;
 import io.fptu.sep490.dto.response.UserDetailResponse;
 import io.fptu.sep490.model.Account;
@@ -8,10 +9,16 @@ import io.fptu.sep490.model.enums.Role;
 import io.fptu.sep490.exception.DuplicateResourceException;
 import io.fptu.sep490.exception.IllegalArgumentException;
 import io.fptu.sep490.repository.AccountRepository;
+import io.fptu.sep490.security.JwtService;
+import io.fptu.sep490.security.UserDetailsImpl;
 import io.fptu.sep490.service.AccountService;
 import io.fptu.sep490.utils.LocalizedTextUtils;
 import io.fptu.sep490.utils.UserInfoUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +29,8 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
     
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -47,6 +56,7 @@ public class AccountServiceImpl implements AccountService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .enabled(ActivityStatus.ACTIVE.isStatus())
+                .locked(ActivityStatus.UNLOCKED.isStatus())
                 .role(isAdmin && request.getRole() != null
                         ? Role.valueOf(request.getRole())
                         : Role.USER)
@@ -62,5 +72,25 @@ public class AccountServiceImpl implements AccountService {
                 .role(account.getRole().name())
                 .build();
     }
-    
+
+    @Override
+    public UserDetailResponse loginUser(LoginRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getInput(), request.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        var userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        var accessToken = jwtService.generateAccessToken(userDetails);
+        var refreshToken = jwtService.generateRefreshToken(userDetails);
+        var role = UserInfoUtils.getCurrentUserRole();
+
+        return UserDetailResponse.builder()
+                .id(userDetails.account().getId())
+                .email(userDetails.account().getEmail())
+                .username(userDetails.account().getUsername())
+                .enabled(userDetails.isEnabled())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken).role(role).build();
+    }
+
 }
