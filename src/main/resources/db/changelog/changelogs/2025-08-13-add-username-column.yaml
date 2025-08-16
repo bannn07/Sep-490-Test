@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20250813-add-username-column
+      author: nam
+      changes:
+        - addColumn:
+            tableName: accounts
+            columns:
+              - column:
+                  name: username
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
