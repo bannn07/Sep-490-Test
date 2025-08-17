@@ -5,7 +5,9 @@ import lombok.Getter;
 @Getter
 public enum ActivityStatus {
     INACTIVE(false),
-    ACTIVE(true);
+    ACTIVE(true),
+    LOCKED(true),
+    UNLOCKED(false);
 
     private final boolean status;
 

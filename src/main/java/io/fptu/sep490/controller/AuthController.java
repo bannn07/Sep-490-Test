@@ -1,6 +1,7 @@
 package io.fptu.sep490.controller;
 
 import io.fptu.sep490.dto.BaseResponse;
+import io.fptu.sep490.dto.request.LoginRequest;
 import io.fptu.sep490.dto.request.RegisterRequest;
 import io.fptu.sep490.dto.response.UserDetailResponse;
 import io.fptu.sep490.service.AccountService;
@@ -24,6 +25,13 @@ public class AuthController {
     public ResponseEntity<BaseResponse<UserDetailResponse>> registerUser(
             @Valid @RequestBody RegisterRequest request) {
         UserDetailResponse account = accountService.registerUser(request);
+        return ResponseEntity.ok(ResponseUtils.success(account));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<BaseResponse<UserDetailResponse>> loginUser(
+            @Valid @RequestBody LoginRequest request) {
+        UserDetailResponse account = accountService.loginUser(request);
         return ResponseEntity.ok(ResponseUtils.success(account));
     }
     

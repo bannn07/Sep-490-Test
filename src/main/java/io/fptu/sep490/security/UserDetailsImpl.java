@@ -31,9 +31,8 @@ public record UserDetailsImpl(Account account) implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !account.isLocked();
     }
-
 
     @Override
     public boolean isEnabled() {

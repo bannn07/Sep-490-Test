@@ -5,3 +5,5 @@ databaseChangeLog:
       file: classpath:db/changelog/changelogs/2025-08-13-add-username-column.yaml
   - include:
       file: classpath:db/changelog/changelogs/2025-08-14-fix-id-charset.yaml
+  - include:
+      file: classpath:db/changelog/changelogs/2025-08-16-add-locked-column.yaml

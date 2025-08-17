@@ -38,4 +38,8 @@ public class Account extends BaseEntity {
 
     @Column(nullable = false)
     private boolean enabled;
+
+    @Column(nullable = false)
+    private boolean locked;
+
 }
