@@ -1,6 +1,6 @@
 package io.fptu.sep490.utils;
 
-import io.fptu.sep490.dto.BaseResponse;
+import io.fptu.sep490.dto.response.BaseResponse;
 import org.springframework.data.domain.Page;
 
 public class ResponseUtils {

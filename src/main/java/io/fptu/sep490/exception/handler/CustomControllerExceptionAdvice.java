@@ -1,7 +1,7 @@
 package io.fptu.sep490.exception.handler;
 
 import io.fptu.sep490.constant.StatusCodeConstants;
-import io.fptu.sep490.dto.BaseResponse;
+import io.fptu.sep490.dto.response.BaseResponse;
 import io.fptu.sep490.exception.DuplicateResourceException;
 import io.fptu.sep490.exception.IllegalArgumentException;
 import io.fptu.sep490.utils.LocalizedTextUtils;
