@@ -11,6 +11,7 @@ public class ResponseUtils {
     public static <T> BaseResponse<T> success(String message) {
         return build(true, null, message, null);
     }
+
     public static <T> BaseResponse<T> success(T data) {
         return build(true, data, null, null);
     }

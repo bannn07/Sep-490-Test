@@ -19,13 +19,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String input) throws UsernameNotFoundException {
-        if (input == null)
-            throw new UsernameNotFoundException(LocalizedTextUtils.getLocalizedText("username.not.empty"));
 
         Account user = (Account) accountRepository.findByUsernameOrEmail(input)
                 .orElseThrow(() -> new UsernameNotFoundException(LocalizedTextUtils.getLocalizedText("user.not.found")));
-
         return new UserDetailsImpl(user);
+
     }
 
 
