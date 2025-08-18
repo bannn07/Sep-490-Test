@@ -1,4 +1,4 @@
-package io.fptu.sep490.controller;
+package io.fptu.sep490.controller.User;
 
 import io.fptu.sep490.dto.request.LoginRequest;
 import io.fptu.sep490.dto.request.RegisterRequest;

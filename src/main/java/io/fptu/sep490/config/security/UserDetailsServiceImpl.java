@@ -1,4 +1,4 @@
-package io.fptu.sep490.security;
+package io.fptu.sep490.config.security;
 
 import io.fptu.sep490.model.Account;
 import io.fptu.sep490.repository.AccountRepository;

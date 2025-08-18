@@ -27,8 +27,6 @@ public class CustomControllerExceptionAdvice {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<BaseResponse<Object>> exceptionHandler(HttpServletRequest request, Exception e) {
         log.error(e.getMessage(), e);
-
-        // 1. Xử lý lỗi validate DTO (ví dụ @Valid trong RequestBody)
         if (e instanceof BindException bindException) {
             String message = bindException.getBindingResult().getFieldErrors().stream()
                     .map(error -> LocalizedTextUtils.getLocalizedText(error.getDefaultMessage()))
@@ -38,8 +36,6 @@ public class CustomControllerExceptionAdvice {
                     String.valueOf(StatusCodeConstants.MANDATORY_PARAM_ERROR), message);
             return ResponseEntity.ok(response);
         }
-
-        // 2. Xử lý lỗi validate tham số trong method (ví dụ @RequestParam, @PathVariable)
         if (e instanceof HandlerMethodValidationException validationException) {
             String message = validationException.getValueResults().stream()
                     .flatMap(result -> result.getResolvableErrors().stream())
@@ -50,8 +46,6 @@ public class CustomControllerExceptionAdvice {
                     String.valueOf(StatusCodeConstants.MANDATORY_PARAM_ERROR), message);
             return ResponseEntity.ok(response);
         }
-
-        // 3. Trường hợp lỗi khác (Internal Server Error)
         BaseResponse<Object> response = ResponseUtils.error(
                 String.valueOf(StatusCodeConstants.INTERNAL_SERVER_ERROR),
                 LocalizedTextUtils.getLocalizedText("internal.server.error")
@@ -59,15 +53,12 @@ public class CustomControllerExceptionAdvice {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
-
     @ExceptionHandler(CustomBusinessException.class)
     public ResponseEntity<?> handleCustomBusinessException(CustomBusinessException e) {
         return ResponseEntity.ok(
                 ResponseUtils.error(e.getErrorCode(), e.getMessage())
         );
     }
-
-
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handleBadCredentialsException(BadCredentialsException e) {
@@ -88,13 +79,11 @@ public class CustomControllerExceptionAdvice {
         );
     }
 
-
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<?> handleDisabledException(DisabledException e) {
         return ResponseEntity.ok(
                 ResponseUtils.error(String.valueOf(HttpStatus.FORBIDDEN), e.getMessage()));
     }
-
 
     @ExceptionHandler(LockedException.class)
     public ResponseEntity<?> handleLockedException(LockedException e) {

@@ -1,4 +1,4 @@
-package io.fptu.sep490.config;
+package io.fptu.sep490.config.datasourse;
 
 import io.fptu.sep490.utils.UserInfoUtils;
 import org.springframework.context.annotation.Bean;

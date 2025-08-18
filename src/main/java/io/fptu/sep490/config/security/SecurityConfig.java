@@ -1,9 +1,6 @@
-package io.fptu.sep490.config;
+package io.fptu.sep490.config.security;
 
 import io.fptu.sep490.exception.handler.CustomAccessDeniedHandler;
-import io.fptu.sep490.security.CustomAuthenticationEntryPoint;
-import io.fptu.sep490.security.JwtAuthenticationFilter;
-import io.fptu.sep490.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,7 +56,6 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_URLS).permitAll()
-                        .requestMatchers("/api/v1/test").hasAuthority("USER")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

@@ -1,4 +1,4 @@
-package io.fptu.sep490.config;
+package io.fptu.sep490.config.language;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;

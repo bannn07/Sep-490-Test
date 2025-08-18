@@ -1,4 +1,4 @@
-package io.fptu.sep490.config;
+package io.fptu.sep490.config.datasourse;
 
 import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.context.annotation.Bean;

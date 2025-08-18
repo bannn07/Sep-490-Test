@@ -1,4 +1,4 @@
-package io.fptu.sep490.security;
+package io.fptu.sep490.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

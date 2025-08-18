@@ -1,8 +1,6 @@
-package io.fptu.sep490.security;
+package io.fptu.sep490.config.security;
 
-import io.fptu.sep490.utils.JsonUtils;
 import io.fptu.sep490.utils.LocalizedTextUtils;
-import io.fptu.sep490.utils.ResponseUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package io.fptu.sep490.config;
+package io.fptu.sep490.config.security;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
