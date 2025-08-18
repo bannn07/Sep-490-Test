@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 @Builder
 @Data
 public class BaseResponse<T> {
-    private Integer errorCode;
+    private String errorCode;
     private T data;
     private Object page;
     private String message;

@@ -1,13 +1,13 @@
 package io.fptu.sep490.service.impl;
 
 import io.fptu.sep490.constant.ActivityStatus;
+import io.fptu.sep490.constant.ErrorCode;
 import io.fptu.sep490.dto.request.LoginRequest;
 import io.fptu.sep490.dto.request.RegisterRequest;
 import io.fptu.sep490.dto.response.UserDetailResponse;
+import io.fptu.sep490.exception.CustomBusinessException;
 import io.fptu.sep490.model.Account;
 import io.fptu.sep490.model.enums.Role;
-import io.fptu.sep490.exception.DuplicateResourceException;
-import io.fptu.sep490.exception.IllegalArgumentException;
 import io.fptu.sep490.repository.AccountRepository;
 import io.fptu.sep490.security.JwtService;
 import io.fptu.sep490.security.UserDetailsImpl;
@@ -37,11 +37,11 @@ public class AccountServiceImpl implements AccountService {
     public UserDetailResponse registerUser(RegisterRequest request) {
 
         if (accountRepository.existsByEmail(request.getEmail())) {
-            throw new DuplicateResourceException(LocalizedTextUtils.getLocalizedText("signup.email.duplicate"));
+            throw new CustomBusinessException(ErrorCode.BUS_DUPLICATE.getCode(), LocalizedTextUtils.getLocalizedText("signup.email.duplicate"));
         }
 
         if (accountRepository.existsByUsername(request.getUserName())) {
-            throw new DuplicateResourceException(LocalizedTextUtils.getLocalizedText("signup.name.duplicate"));
+            throw new CustomBusinessException(ErrorCode.BUS_DUPLICATE.getCode(), LocalizedTextUtils.getLocalizedText("signup.name.duplicate"));
         }
 
         if (!request.getPassword().equals(request.getConfirmPassword())) {
