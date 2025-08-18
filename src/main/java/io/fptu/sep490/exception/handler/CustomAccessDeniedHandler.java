@@ -23,7 +23,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
             throws IOException {
 
         BaseResponse<Object> baseResponse = ResponseUtils.error(
-                HttpStatus.FORBIDDEN.value()
+                String.valueOf(HttpStatus.FORBIDDEN)
                 , LocalizedTextUtils.getLocalizedText("access.denied")
         );
 

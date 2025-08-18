@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -52,14 +53,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (!userDetails.isEnabled()) {
                 revokeTokenIfExists(token);
-                sendErrorResponse(response, "account.is.disabled");
-                return;
+                throw new DisabledException(LocalizedTextUtils.getLocalizedText("account.is.disabled"));
             }
 
             if (!userDetails.isAccountNonLocked()) {
                 revokeTokenIfExists(token);
-                sendErrorResponse(response, "account.is.locked");
-                return;
+                throw new DisabledException(LocalizedTextUtils.getLocalizedText("account.is.locked"));
             }
 
             if (jwtService.isTokenValid(token, userDetails)) {
@@ -83,18 +82,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } else {
             tokenStoreService.revokeAccessToken(token);
         }
-    }
-
-    private void sendErrorResponse(HttpServletResponse response, String messageKey) throws IOException {
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        response.setContentType("application/json;charset=UTF-8");
-
-        var errorBody = ResponseUtils.error(
-                HttpServletResponse.SC_FORBIDDEN,
-                LocalizedTextUtils.getLocalizedText(messageKey)
-        );
-
-        response.getWriter().write(JsonUtils.marshal(errorBody));
     }
 
 }
