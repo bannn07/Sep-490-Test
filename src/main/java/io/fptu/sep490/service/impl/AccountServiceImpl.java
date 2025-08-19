@@ -3,6 +3,7 @@ package io.fptu.sep490.service.impl;
 import io.fptu.sep490.constant.ActivityStatus;
 import io.fptu.sep490.constant.ErrorCode;
 import io.fptu.sep490.dto.request.LoginRequest;
+import io.fptu.sep490.dto.request.RefreshTokenRequest;
 import io.fptu.sep490.dto.request.RegisterRequest;
 import io.fptu.sep490.dto.response.UserDetailResponse;
 import io.fptu.sep490.exception.CustomBusinessException;
@@ -100,6 +101,46 @@ public class AccountServiceImpl implements AccountService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .role(role)
+                .build();
+    }
+
+    @Override
+    public UserDetailResponse refreshAccessToken(RefreshTokenRequest request) {
+
+        if (!tokenStoreService.isRefreshTokenValid(request.getRefreshToken())
+                || !jwtService.isRefreshToken(request.getRefreshToken())) {
+            throw new CustomBusinessException(ErrorCode.VAL_PARAM_INVALID.getCode(),
+                    LocalizedTextUtils.getLocalizedText("auth.token.invalid"));
+        }
+
+        if (jwtService.isTokenExpired(request.getRefreshToken())) {
+            tokenStoreService.revokeRefreshToken(request.getRefreshToken());
+            throw new CustomBusinessException(ErrorCode.VAL_PARAM_INVALID.getCode(),
+                    LocalizedTextUtils.getLocalizedText("auth.token.expired"));
+        }
+
+        var accountId = jwtService.extractAccountId(request.getRefreshToken());
+        var account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new CustomBusinessException(ErrorCode.BUS_NOT_FOUND.getCode(),
+                        LocalizedTextUtils.getLocalizedText("user.not.found")));
+
+        var userDetails = UserDetailsImpl.builder()
+                .account(account)
+                .build();
+
+        var newAccessToken = jwtService.generateAccessToken(userDetails);
+        var refreshToken = jwtService.generateRefreshToken(userDetails);
+        tokenStoreService.storeAccessToken(newAccessToken, jwtService.getAccessTokenExpirationMs());
+        tokenStoreService.storeRefreshToken(refreshToken, jwtService.getRefreshTokenExpirationMs());
+
+        return UserDetailResponse.builder()
+                .id(account.getId())
+                .email(account.getEmail())
+                .username(account.getUsername())
+                .enabled(userDetails.isEnabled())
+                .accessToken(newAccessToken)
+                .refreshToken(refreshToken)
+                .role(account.getRole().name())
                 .build();
     }
 

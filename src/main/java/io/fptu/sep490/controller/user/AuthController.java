@@ -1,6 +1,7 @@
 package io.fptu.sep490.controller.user;
 
 import io.fptu.sep490.dto.request.LoginRequest;
+import io.fptu.sep490.dto.request.RefreshTokenRequest;
 import io.fptu.sep490.dto.request.RegisterRequest;
 import io.fptu.sep490.dto.response.BaseResponse;
 import io.fptu.sep490.dto.response.UserDetailResponse;
@@ -34,6 +35,12 @@ public class AuthController {
         UserDetailResponse account = accountService.loginUser(request);
         return ResponseEntity.ok(ResponseUtils.success(account));
     }
-    
+
+    @PostMapping("/refresh")
+    public ResponseEntity<BaseResponse<UserDetailResponse>> refreshAccessToken(
+            @Valid @RequestBody RefreshTokenRequest request) {
+        UserDetailResponse account = accountService.refreshAccessToken(request);
+        return ResponseEntity.ok(ResponseUtils.success(account));
+    }
 
 }
