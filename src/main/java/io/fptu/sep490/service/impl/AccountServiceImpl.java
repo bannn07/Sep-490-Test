@@ -9,9 +9,10 @@ import io.fptu.sep490.exception.CustomBusinessException;
 import io.fptu.sep490.model.Account;
 import io.fptu.sep490.model.enums.Role;
 import io.fptu.sep490.repository.AccountRepository;
-import io.fptu.sep490.config.security.JwtService;
-import io.fptu.sep490.config.security.UserDetailsImpl;
+import io.fptu.sep490.config.security.filter.UserDetailsImpl;
 import io.fptu.sep490.service.AccountService;
+import io.fptu.sep490.service.TokenStoreService;
+import io.fptu.sep490.utils.JwtUtils;
 import io.fptu.sep490.utils.LocalizedTextUtils;
 import io.fptu.sep490.utils.UserInfoUtils;
 import lombok.RequiredArgsConstructor;
@@ -29,23 +30,27 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final JwtUtils jwtService;
     private final AuthenticationManager authenticationManager;
-    
+    private final TokenStoreService tokenStoreService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserDetailResponse registerUser(RegisterRequest request) {
 
         if (accountRepository.existsByEmail(request.getEmail())) {
-            throw new CustomBusinessException(ErrorCode.BUS_DUPLICATE.getCode(), LocalizedTextUtils.getLocalizedText("signup.email.duplicate"));
+            throw new CustomBusinessException(ErrorCode.BUS_DUPLICATE.getCode()
+                    , LocalizedTextUtils.getLocalizedText("signup.email.duplicate"));
         }
 
         if (accountRepository.existsByUsername(request.getUserName())) {
-            throw new CustomBusinessException(ErrorCode.BUS_DUPLICATE.getCode(), LocalizedTextUtils.getLocalizedText("signup.name.duplicate"));
+            throw new CustomBusinessException(ErrorCode.BUS_DUPLICATE.getCode()
+                    , LocalizedTextUtils.getLocalizedText("signup.name.duplicate"));
         }
 
         if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new IllegalArgumentException(LocalizedTextUtils.getLocalizedText("signup.password.confirm.invalid"));
+            throw new CustomBusinessException(ErrorCode.VAL_PARAM_INVALID.getCode()
+                    , LocalizedTextUtils.getLocalizedText("signup.password.confirm.invalid"));
         }
 
         var role = UserInfoUtils.getCurrentUserRole();
@@ -84,13 +89,18 @@ public class AccountServiceImpl implements AccountService {
         var refreshToken = jwtService.generateRefreshToken(userDetails);
         var role = UserInfoUtils.getCurrentUserRole();
 
+        tokenStoreService.storeAccessToken(accessToken, jwtService.getAccessTokenExpirationMs());
+        tokenStoreService.storeRefreshToken(refreshToken, jwtService.getRefreshTokenExpirationMs());
+
         return UserDetailResponse.builder()
                 .id(userDetails.account().getId())
                 .email(userDetails.account().getEmail())
                 .username(userDetails.account().getUsername())
                 .enabled(userDetails.isEnabled())
                 .accessToken(accessToken)
-                .refreshToken(refreshToken).role(role).build();
+                .refreshToken(refreshToken)
+                .role(role)
+                .build();
     }
 
 }

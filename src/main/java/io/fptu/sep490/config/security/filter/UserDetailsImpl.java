@@ -1,4 +1,4 @@
-package io.fptu.sep490.config.security;
+package io.fptu.sep490.config.security.filter;
 
 import io.fptu.sep490.model.Account;
 import lombok.Builder;

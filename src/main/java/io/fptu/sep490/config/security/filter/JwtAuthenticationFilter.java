@@ -1,5 +1,7 @@
-package io.fptu.sep490.config.security;
+package io.fptu.sep490.config.security.filter;
 
+import io.fptu.sep490.service.TokenStoreService;
+import io.fptu.sep490.utils.JwtUtils;
 import io.fptu.sep490.utils.LocalizedTextUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,7 +25,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final JwtUtils jwtService;
     private final UserDetailsServiceImpl userDetailsService;
     private final TokenStoreService tokenStoreService;
 
@@ -42,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
 
-        final var token = authHeader.substring(7);
+        final var token = authHeader.substring( 7);
         final var username = jwtService.extractUsername(token);
 
 
@@ -59,7 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new DisabledException(LocalizedTextUtils.getLocalizedText("account.is.locked"));
             }
 
-            if (jwtService.isTokenValid(token, userDetails)) {
+            if (jwtService.isTokenValid(token, userDetails) && tokenStoreService.isAccessTokenValid(token)) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,

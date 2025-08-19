@@ -1,8 +1,10 @@
-package io.fptu.sep490.config.security;
+package io.fptu.sep490.utils;
 
+import io.fptu.sep490.config.security.filter.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,12 +17,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Slf4j
 @Component
+@Getter
 @RequiredArgsConstructor
-public class JwtService {
+public class JwtUtils {
 
     private static final String CLAIM_TYPE = "type";
     private static final String CLAIM_ACCOUNT_ID = "accountId";
@@ -97,14 +101,11 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration).before(new Date());
     }
 
-    public Integer extractAccountId(String token) {
+    public UUID extractAccountId(String token) {
         Object raw = extractClaim(token, claims -> claims.get(CLAIM_ACCOUNT_ID));
-        return raw != null ? Integer.parseInt(raw.toString()) : null;
+        return raw != null ? UUID.fromString(raw.toString()) : null;
     }
 
-    public String extractRole(String token) {
-        return parseStringClaim(token, CLAIM_ROLE);
-    }
 
     public boolean isRefreshToken(String token) {
         return "refresh".equals(parseStringClaim(token, CLAIM_TYPE));

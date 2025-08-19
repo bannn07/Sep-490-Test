@@ -1,7 +1,7 @@
 package io.fptu.sep490.utils;
 
 import io.fptu.sep490.model.Account;
-import io.fptu.sep490.config.security.UserDetailsImpl;
+import io.fptu.sep490.config.security.filter.UserDetailsImpl;
 import io.jsonwebtoken.lang.Strings;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
