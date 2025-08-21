@@ -9,7 +9,7 @@ services:
       - local.env
 
     ports:
-      - "3306:3306"
+      - "3303:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -23,8 +23,8 @@ services:
       - mysql
     ports:
       - "8080:8080"
-    environment:
-      SPRING-PROFILES-ACTIVE: local
+#    environment:
+#      SPRING-PROFILES-ACTIVE: local
 
     networks:
       - app-network
@@ -38,7 +38,6 @@ networks:
 
 
 #local: SPRING_PROFILE=local ./gradlew bootRun
-
 
 #dev:
 #-export SPRING_PROFILE=dev

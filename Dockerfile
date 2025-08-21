@@ -14,7 +14,7 @@ COPY src ./src
 COPY application*.properties ./
 
 # Build JAR
-RUN mvn clean package -DskipTests
+RUN mvn clean package
 
 # =====================
 # Stage 2: Run
