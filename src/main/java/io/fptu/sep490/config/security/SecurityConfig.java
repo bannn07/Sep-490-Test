@@ -29,7 +29,10 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    protected static final String[] PUBLIC_URLS = {"/api/v1/auth/**"};
+    protected static final String[] PUBLIC_URLS = {
+            "/api/v1/auth/**",
+            "/api/v1/forgot-pass/**"
+    };
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -60,7 +63,6 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_URLS).permitAll()
-                        .requestMatchers("/api/v1/test/*").hasAuthority("USER")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
