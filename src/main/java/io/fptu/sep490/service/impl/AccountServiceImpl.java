@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
-import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -183,7 +183,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public OtpResponse sendOtp(OtpRequest request) throws MessagingException {
-
         var account = accountRepository.findByEmail(request.getEmail());
 
         if (!otpService.checkOtpLimit(request.getEmail())) {
@@ -210,28 +209,39 @@ public class AccountServiceImpl implements AccountService {
         var otp = GeneratorUtils.generateRandomOTP(6);
         otpService.saveOtp(request.getEmail(), otp);
 
+        try {
+            Map<String, Object> vars = Map.of(
+                    "name", account.get().getUsername(),
+                    "otp", otp,
+                    "expiry", String.valueOf(otpService.getOtpTTLMinutes())
+            );
 
-        Map<String, Object> vars = Map.of(
-                "name", account.get().getUsername(),
-                "otp", otp,
-                "expiry", "2 phút"
-        );
+            emailUtils.sendEmail(
+                    request.getEmail(),
+                    EmailType.SEND_OTP,
+                    vars
+            );
 
 
-        emailUtils.sendEmail(
-                request.getEmail(),
-                EmailType.SEND_OTP,
-                vars
-        );
+            otpService.lockOtpRequest(request.getEmail());
 
-        otpService.lockOtpRequest(request.getEmail());
+            return OtpResponse.builder()
+                    .email(request.getEmail())
+                    .otpTime((int) otpService.getOtpTTLSeconds())
+                    .duration(60)
+                    .build();
 
-        return OtpResponse.builder()
-                .email(request.getEmail())
-                .otpTime(120)
-                .duration(60)
-                .build();
+        } catch (MessagingException e) {
+            otpService.clearOtp(request.getEmail());
+            otpService.rollbackOtpLimit(request.getEmail());
+
+            throw new CustomBusinessException(
+                    ErrorCode.BUS_GENERIC_ERROR.getCode(),
+                    LocalizedTextUtils.getLocalizedText("send-otp.email.failed")
+            );
+        }
     }
+
 
     @Override
     public BaseResponse<?> resetPassword(ResetPassRequest request) {

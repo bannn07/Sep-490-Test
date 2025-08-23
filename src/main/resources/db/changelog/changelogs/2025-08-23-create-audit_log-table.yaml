@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20250823-create-audit_log-table
+      author: nam
+      changes:
+        - createTable:
+            tableName: audit_log
+            columns:
+              - column:
+                  name: id
+                  type: CHAR(36) CHARACTER SET ascii NOT NULL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: action_type
+                  type: VARCHAR(255)
+              - column:
+                  name: end_point
+                  type: VARCHAR(255)
+              - column:
+                  name: log
+                  type: TEXT
+              - column:
+                  name: status
+                  type: VARCHAR(255)
+              - column:
+                  name: created_at
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: datetime
+                  constraints:
+                    nullable: true
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+                  constraints:
+                    nullable: true
