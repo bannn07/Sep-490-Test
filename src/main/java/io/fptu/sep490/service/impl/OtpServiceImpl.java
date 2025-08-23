@@ -88,4 +88,28 @@ public class OtpServiceImpl implements OtpService {
 
         return count != null && count <= MAX_OTP_PER_DAY;
     }
+
+    @Override
+    public void clearOtp(String email) {
+        redisTemplate.delete(buildKey(email));
+    }
+
+
+    @Override
+    public void rollbackOtpLimit(String email) {
+        var today = LocalDate.now().toString();
+        var redisKey = "otp:limit:" + email + ":" + today;
+        redisTemplate.opsForValue().decrement(redisKey);
+    }
+
+    @Override
+    public long getOtpTTLMinutes() {
+        return otpTTL.toMinutes();
+    }
+
+    @Override
+    public long getOtpTTLSeconds() {
+        return otpTTL.toSeconds();
+    }
+
 }

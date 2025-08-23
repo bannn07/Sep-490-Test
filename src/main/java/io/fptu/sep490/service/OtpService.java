@@ -21,4 +21,12 @@ public interface OtpService {
 
     boolean checkOtpLimit(String email);
 
+    void clearOtp(String email);
+
+    // rollback quota (giảm count đi 1)
+    void rollbackOtpLimit(String email);
+
+    long getOtpTTLMinutes();
+
+    long getOtpTTLSeconds();
 }
